@@ -29,6 +29,7 @@
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.5",
     "encoding": "^0.1.13",
+    "ignore-loader": "^0.1.2",
     "postcss-custom-properties-fallback": "^1.0.2"
   }
 }
