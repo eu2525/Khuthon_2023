@@ -32,7 +32,7 @@ export default async function ProfilePage() {
   return (
     <>
       <CheckAuthProvider />
-      <section className="py-8 flex flex-col justify-center items-center">
+      <section className="py-8 flex flex-col justify-center items-center px-4">
         <Avatar size="lg" className="mb-4" />
         <p>{user?.email}</p>
         <div className="w-full flex justify-center">

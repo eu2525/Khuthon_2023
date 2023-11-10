@@ -12,6 +12,7 @@ interface CorrectionModalProps extends ModalProps {
   score: number;
   evaluation: string;
   suggestion: string;
+  answer: string;
 }
 export const CorrectionModal = ({
   isOpen,
@@ -19,6 +20,7 @@ export const CorrectionModal = ({
   score,
   evaluation,
   suggestion,
+  answer,
 }: CorrectionModalProps) => {
   return (
     <Modal
@@ -34,6 +36,8 @@ export const CorrectionModal = ({
               ✅ 채점 완료 ✅
             </ModalHeader>
             <ModalBody>
+              <h5 className="font-bold">나의 답변</h5>
+              <p>{answer}</p>
               <h5 className="font-bold">점수</h5>
               <p>{score}</p>
               <h5 className="font-bold">답변에 대한 평가</h5>

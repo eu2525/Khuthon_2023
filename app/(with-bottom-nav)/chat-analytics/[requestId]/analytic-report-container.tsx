@@ -85,17 +85,22 @@ ${chat_raw}
     await supabase
       .from("chat_analytic_requests")
       .update({
-        total_score: totalScore / finals.length,
+        total_score: Math.round(totalScore / finals.length),
       })
-      .eq("id", res);
+      .eq("id", requestId);
 
     router.refresh();
   };
 
   if (loading)
     return (
-      <div className="h-full flex justify-center items-center">
-        <Spinner />
+      <div className="h-full flex flex-col justify-center items-center">
+        <Spinner className="mb-2" />
+        <p className="font-bold text-center">
+          보고서를 준비하고 있어요!
+          <br />
+          조금만 기다려주세요!
+        </p>
       </div>
     );
   return (

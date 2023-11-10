@@ -121,7 +121,6 @@ ${additional_prompt}
       setEvaluation(evaluation);
       setSuggestion(suggestion);
       setShowModal(true);
-      setAnswer("");
     } catch (e) {
       console.error(e);
     } finally {
@@ -130,6 +129,7 @@ ${additional_prompt}
   };
 
   const handleNextQuestion = () => {
+    setAnswer("");
     router.refresh();
   };
 
@@ -187,6 +187,7 @@ ${additional_prompt}
             handleNextQuestion();
           }
         }}
+        answer={answer}
         score={score}
         evaluation={evaluation}
         suggestion={suggestion}

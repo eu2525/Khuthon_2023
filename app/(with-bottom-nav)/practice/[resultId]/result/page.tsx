@@ -16,23 +16,23 @@ export default async function ResultPage({
   const { data: result } = await supabase
     .from("practice_results")
     .select(
-      "*, practice_sets (practice_questions (*)), practice_answers (*, practice_questions (*))"
+      "*, practice_sets (*), practice_answers (*, practice_questions (*))"
     )
     .eq("id", resultId)
     .single();
   if (!result) return notFound();
-  const questions = result?.practice_sets?.practice_questions;
   const answers = result?.practice_answers;
   const { score } = result;
 
   let _result = result;
   // 학습결과 집계
-  if (!score && questions && questions.length > 0) {
+  console.log(score, answers);
+  if (!score && !!answers) {
     const totalScore = answers.reduce(
       (prev, curr) => prev + (curr.score ?? 0),
       0
     );
-    const averageScore = totalScore / questions.length;
+    const averageScore = Math.round(totalScore / answers.length);
     const newResult = await supabase
       .from("practice_results")
       .update({
