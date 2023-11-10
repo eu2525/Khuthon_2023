@@ -14,7 +14,7 @@ const ChatItem = ({ chat }: { chat: Chat }) => {
   const { sender, message, isMe } = chat;
 
   return (
-    <div className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isMe ? "justify-end" : "justify-start"} mb-4`}>
       <div>
         <p className="pl-2 text-sm text-gray-900 mb-1">{sender}</p>
         <div

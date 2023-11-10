@@ -2,6 +2,7 @@ import { Avatar, Progress } from "@nextui-org/react";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { CheckAuthProvider } from "@/utils/supabase/check-auth-provider";
+import { ResultContainer } from "./result-conatiner";
 
 export default async function ProfilePage() {
   const cookieStore = cookies();
@@ -10,6 +11,9 @@ export default async function ProfilePage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const { data: results } = await supabase
+    .from("practice_results")
+    .select("*, practice_sets(*)");
 
   return (
     <>
@@ -33,6 +37,7 @@ export default async function ProfilePage() {
           showValueLabel={true}
         />
       </div>
+      {results ? <ResultContainer results={results} /> : null}
     </>
   );
 }

@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { QuestionContainer } from "./question-container";
 import { BackNavbar } from "@/components/layouts/back-navbar";
+import { redirect } from "next/navigation";
 
 export default async function ResultPage({
   params,
@@ -27,6 +28,9 @@ export default async function ResultPage({
     (q) => !answers.find((a) => a.question_id === q.id)
   );
   const questionCount = unsolvedQuestions.length;
+  if (questionCount === 0) {
+    redirect(`/practice/${id}/result`);
+  }
 
   return (
     <>

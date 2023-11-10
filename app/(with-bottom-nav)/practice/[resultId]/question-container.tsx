@@ -2,13 +2,14 @@
 
 import { Database } from "@/utils/supabase/database.types";
 import { Chat } from "@/utils/types";
-import { Button, Input, Textarea } from "@nextui-org/react";
+import { Button, Textarea } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ChatContainer } from "./chat-container";
 import { LevelBadge } from "@/components/level-badge";
-import axios from "axios";
+import { createClient } from "@/utils/supabase/client";
+import { CorrectionModal } from "./correction-modal";
 
 type Question = Database["public"]["Tables"]["practice_questions"]["Row"];
 
@@ -26,10 +27,16 @@ export const QuestionContainer = ({
 
   const [answer, setAnswer] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [score, setScore] = useState<number>(0);
+  const [evaluation, setEvaluation] = useState<string>("");
+  const [suggestion, setSuggestion] = useState<string>("");
 
   useEffect(() => {
     if (!!selectedQuestion) {
-      const chats = selectedQuestion.chat_raw?.split("\n");
+      const chats = selectedQuestion.chat_raw
+        ?.split("\n")
+        .filter((chat) => chat !== "");
 
       setChats(
         chats?.map((chat) => {
@@ -70,39 +77,46 @@ ${chat_raw}
 ${additional_prompt}
 위의 대화에서 '나'는 답변을 잘 한 것 같아? 다음과 같은 양식으로 위의 대화를 평가해줘!
 
-점수 : 0~10 사이로 '나'의 답변을 평가
+점수 : 0~10 사이로 '나'의 답변을 평가해줘. 상대방의 말에 공감을 잘 하고 있으면 높은 점수를, 그렇지 않으면 0점에 가까운 점수를 줘.
 평가 : 위의 점수를 준 이유
 제안 : '나'가 했어야 하는 답변을 제안`;
-      console.log(prompt);
-      const res = await axios.post(
+      const res = await fetch(
         "https://ccmpekyfrelctemsruhy.supabase.co/functions/v1/practice-correction",
-        // "http://127.0.0.1:54321/functions/v1/practice-correction",
         {
-          prompt,
-        },
-        {
+          method: "POST",
           headers: {
+            Authorization: `Bearer ${process.env
+              .NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers":
-              "authorization, x-client-info, apikey, content-type",
           },
+          body: JSON.stringify({ prompt }),
         }
       );
-      // const formData = new FormData();
-      // formData.append("prompt", prompt);
-      // const res = await fetch(
-      //   "http://127.0.0.1:54321/functions/v1/practice-correction",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({ prompt }),
-      //   }
-      // );
-      // const data = await res.json();
-      // console.log(data);
+      const data = await res.json();
+      const correction_result = data.choices[0].text;
+      // get score, evaluation, suggestion
+      const scoreMatch = correction_result.match(/^점수 : (\d+)$/m);
+      const evaluationMatch = correction_result.match(/^평가 : (.+)$/m);
+      const suggestionMatch = correction_result.match(/^제안 : (.+)$/m);
+      const score = scoreMatch ? scoreMatch[1] : 0;
+      const evaluation = evaluationMatch ? evaluationMatch[1] : "";
+      const suggestion = suggestionMatch ? suggestionMatch[1] : "";
+      // add answer
+      const supabase = createClient();
+      await supabase.from("practice_answers").insert({
+        answer,
+        evaluation,
+        question_id: selectedQuestion.id,
+        result_id: resultId,
+        score,
+        suggestion,
+      });
+
+      // set state
+      setScore(score);
+      setEvaluation(evaluation);
+      setSuggestion(suggestion);
+      setShowModal(true);
       setChats(
         chats.concat({
           isMe: true,
@@ -116,6 +130,10 @@ ${additional_prompt}
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleNextQuestion = () => {
+    router.refresh();
   };
 
   return (
@@ -164,6 +182,20 @@ ${additional_prompt}
           </Button>
         </form>
       </div>
+      <CorrectionModal
+        isOpen={showModal}
+        onOpenChange={(open) => {
+          setShowModal(open);
+          if (open == false) {
+            handleNextQuestion();
+          }
+        }}
+        score={score}
+        evaluation={evaluation}
+        suggestion={suggestion}
+      >
+        <></>
+      </CorrectionModal>
     </div>
   );
 };

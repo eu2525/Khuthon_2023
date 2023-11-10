@@ -6,40 +6,51 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
-  try {
-    const { prompt } = await req.json();
-
-    const res = await fetch(
-      `https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions`,
-      {
-        body: JSON.stringify({
-          prompt,
-          temperature: 0.5,
-          max_tokens: 1024,
-          top_p: 1,
-          frequency_penalty: 0.52,
-          presence_penalty: 0.5,
-          best_of: 1,
-        }),
-        headers: {
-          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-      }
-    );
-    const data = await res.json();
-
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Expose-Headers": "Content-Length, X-JSON",
+        "Access-Control-Allow-Headers":
+          "apikey,X-Client-Info, Content-Type, Authorization, Accept, Accept-Language, X-Authorization",
+      },
     });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+  } else {
+    try {
+      const { prompt } = await req.json();
+      const res = await fetch(
+        `https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions`,
+        {
+          body: JSON.stringify({
+            prompt,
+            temperature: 0.5,
+            max_tokens: 1024,
+            top_p: 1,
+            frequency_penalty: 0.52,
+            presence_penalty: 0.5,
+            best_of: 1,
+          }),
+          headers: {
+            Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+        }
+      );
+      const data = await res.json();
+
+      return new Response(JSON.stringify(data), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    } catch (error) {
+      console.error(error);
+      return new Response(JSON.stringify({ error: error.message }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
   }
 });
 
