@@ -26,7 +26,7 @@ export default async function ResultPage({
   const unsolvedQuestions = questions.filter(
     (q) => !answers.find((a) => a.question_id === q.id)
   );
-  const questionConut = unsolvedQuestions.length;
+  const questionCount = unsolvedQuestions.length;
 
   return (
     <>

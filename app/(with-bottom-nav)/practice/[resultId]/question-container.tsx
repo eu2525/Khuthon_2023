@@ -1,6 +1,5 @@
 "use client";
 
-import { BACK_NAVBAR_HEIGHT } from "@/components/layouts/back-navbar";
 import { Database } from "@/utils/supabase/database.types";
 import { Chat } from "@/utils/types";
 import { Button, Input, Textarea } from "@nextui-org/react";
@@ -9,6 +8,7 @@ import { FormEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ChatContainer } from "./chat-container";
 import { LevelBadge } from "@/components/level-badge";
+import axios from "axios";
 
 type Question = Database["public"]["Tables"]["practice_questions"]["Row"];
 
@@ -33,7 +33,6 @@ export const QuestionContainer = ({
 
       setChats(
         chats?.map((chat) => {
-          // const match = chat.match(/([^:]+) : (.*)/gm);
           const match = [...chat.matchAll(/([^:]+):(.*)/gm)];
           const sender = match ? (match[0] ? match[0][1]?.trim() : "") : "";
           const message = match ? (match[0] ? match[0][2]?.trim() : "") : "";
@@ -56,9 +55,67 @@ export const QuestionContainer = ({
     }
   }, [questions]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+
+    if (!selectedQuestion) return;
+
+    try {
+      setLoading(true);
+      const { question, chat_raw, additional_prompt } = selectedQuestion;
+      const prompt = `${question}
+${chat_raw}
+나 : ${answer}
+
+${additional_prompt}
+위의 대화에서 '나'는 답변을 잘 한 것 같아? 다음과 같은 양식으로 위의 대화를 평가해줘!
+
+점수 : 0~10 사이로 '나'의 답변을 평가
+평가 : 위의 점수를 준 이유
+제안 : '나'가 했어야 하는 답변을 제안`;
+      console.log(prompt);
+      const res = await axios.post(
+        "https://ccmpekyfrelctemsruhy.supabase.co/functions/v1/practice-correction",
+        // "http://127.0.0.1:54321/functions/v1/practice-correction",
+        {
+          prompt,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers":
+              "authorization, x-client-info, apikey, content-type",
+          },
+        }
+      );
+      // const formData = new FormData();
+      // formData.append("prompt", prompt);
+      // const res = await fetch(
+      //   "http://127.0.0.1:54321/functions/v1/practice-correction",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({ prompt }),
+      //   }
+      // );
+      // const data = await res.json();
+      // console.log(data);
+      setChats(
+        chats.concat({
+          isMe: true,
+          message: answer,
+          sender: "나",
+        })
+      );
+      setAnswer("");
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

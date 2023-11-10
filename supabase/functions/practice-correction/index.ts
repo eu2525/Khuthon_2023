@@ -2,44 +2,46 @@
 // https://deno.land/manual/getting_started/setup_your_environment
 // This enables autocomplete, go to definition, etc.
 
-import OpenAI, {CreateCompletionRequest} from "https://deno.land/x/openai@4.16.1/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { corsHeaders } from "../_shared/cors.ts";
 
-Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+serve(async (req) => {
+  try {
+    const { prompt } = await req.json();
+
+    const res = await fetch(
+      `https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions`,
+      {
+        body: JSON.stringify({
+          prompt,
+          temperature: 0.5,
+          max_tokens: 1024,
+          top_p: 1,
+          frequency_penalty: 0.52,
+          presence_penalty: 0.5,
+          best_of: 1,
+        }),
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      }
+    );
+    const data = await res.json();
+
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 400,
+    });
   }
-
-const openai = new OpenAI();
-
-async function main() {
-  const completion = await openai.chat.completions.create({
-    messages: [{"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Who won the world series in 2020?"},
-        {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-        {"role": "user", "content": "Where was it played?"}],
-    model: "gpt-3.5-turbo",
-  });
-
-  const { query } = await req.json()
-
-  const completionConfig: CreateCompletionRequest = {
-    model: 'text-davinci-003',
-    prompt: query,
-    max_tokens: 256,
-    temperature: 0,
-    stream: false,
-  }
-
-  return fetch('https://api.openai.com/v1/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(completionConfig),
-  })
-})
+});
 
 // To invoke:
 // curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/' \
