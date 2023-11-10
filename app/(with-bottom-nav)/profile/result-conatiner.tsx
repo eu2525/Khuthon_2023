@@ -10,7 +10,7 @@ import {
 
 type _Result = Database["public"]["Tables"]["practice_results"]["Row"];
 interface Result extends _Result {
-  practice_sets: Database["public"]["Tables"]["practice_sets"]["Row"];
+  practice_sets: Database["public"]["Tables"]["practice_sets"]["Row"] | null;
 }
 export const ResultContainer = ({ results }: { results: Result[] }) => {
   return (
@@ -24,7 +24,7 @@ export const ResultContainer = ({ results }: { results: Result[] }) => {
 
 const ResultItem = ({ result }: { result: Result }) => {
   const { id, score, created_at, updated_at, practice_sets } = result;
-  const { title, description, thumbnail_image, level } = practice_sets;
+  const { title, description, thumbnail_image, level } = practice_sets!;
   const isDone = !!score;
 
   return (

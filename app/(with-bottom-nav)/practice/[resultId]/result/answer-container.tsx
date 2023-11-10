@@ -4,7 +4,7 @@ type Answer = Database['public']['Tables']['practice_answers']['Row']
 export const AnswerContainer = ({answers}: {answers: Answer[]}) => {
     return (
         <div>
-            {answers.map(answer => )}
+            {/* {answers.map(answer => )} */}
         </div>
     )
 }
@@ -12,7 +12,7 @@ export const AnswerContainer = ({answers}: {answers: Answer[]}) => {
 const AnswerItem = () => {
     return (
         <div>
-            
+
         </div>
     )
 }
