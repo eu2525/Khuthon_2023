@@ -99,7 +99,7 @@ ${additional_prompt}
       console.log(data);
       const correction_result = data.choices[0].message.content;
       // get score, evaluation, suggestion
-      const scoreMatch = correction_result.match(/^점수:(\d+)$/m);
+      const scoreMatch = correction_result.match(/^점수\s*:\s*(\d+)$/m);
       const evaluationMatch = correction_result.match(/^평가:(.+)$/m);
       const suggestionMatch = correction_result.match(/^제안:(.+)$/m);
       const score = scoreMatch ? scoreMatch[1].trim() : 0;

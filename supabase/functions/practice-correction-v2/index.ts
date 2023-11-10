@@ -21,8 +21,8 @@ serve(async (req) => {
       const { prompt } = await req.json();
       const res = await fetch("https://api.openai.com/v1/chat/completions", {
         body: JSON.stringify({
-          // model: "gpt-4-1106-preview",
-          model: "gpt-3.5-turbo-1106",
+          model: "gpt-4-1106-preview",
+          // model: "gpt-3.5-turbo-1106",
           messages: [
             { role: "system", content: systemMessage },
             { role: "user", content: prompt },
