@@ -1,7 +1,3 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 
@@ -21,25 +17,25 @@ serve(async (req) => {
   } else {
     try {
       const { prompt } = await req.json();
-      const res = await fetch(
-        `https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions`,
-        {
-          body: JSON.stringify({
-            prompt,
-            temperature: 0.7,
-            max_tokens: 256,
-            top_p: 0.5,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            best_of: 1,
-          }),
-          headers: {
-            Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        }
-      );
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        body: JSON.stringify({
+          model: "gpt-4-1106-preview",
+          messages: [
+            { role: "system", content: systemMessage },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 512,
+          top_p: 0.5,
+          frequency_penalty: 0,
+          presence_penalty: 0,
+        }),
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+      });
       const data = await res.json();
 
       return new Response(JSON.stringify(data), {
@@ -55,9 +51,3 @@ serve(async (req) => {
     }
   }
 });
-
-// To invoke:
-// curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'

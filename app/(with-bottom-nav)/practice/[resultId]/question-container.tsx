@@ -81,7 +81,8 @@ ${additional_prompt}
 평가 : 위의 점수를 준 이유
 제안 : '나'가 했어야 하는 답변을 제안`;
       const res = await fetch(
-        "https://ccmpekyfrelctemsruhy.supabase.co/functions/v1/practice-correction",
+        // "https://ccmpekyfrelctemsruhy.supabase.co/functions/v1/practice-correction",
+        "https://ccmpekyfrelctemsruhy.supabase.co/functions/v1/practice-correction-v2",
         {
           method: "POST",
           headers: {
@@ -93,7 +94,7 @@ ${additional_prompt}
         }
       );
       const data = await res.json();
-      const correction_result = data.choices[0].text;
+      const correction_result = data.choices[0].message.content;
       // get score, evaluation, suggestion
       const scoreMatch = correction_result.match(/^점수 : (\d+)$/m);
       const evaluationMatch = correction_result.match(/^평가 : (.+)$/m);
@@ -117,13 +118,6 @@ ${additional_prompt}
       setEvaluation(evaluation);
       setSuggestion(suggestion);
       setShowModal(true);
-      setChats(
-        chats.concat({
-          isMe: true,
-          message: answer,
-          sender: "나",
-        })
-      );
       setAnswer("");
     } catch (e) {
       console.error(e);

@@ -45,16 +45,17 @@ const ResultItem = ({ result }: { result: Result }) => {
             {isDone ? <p>{score}점</p> : <p>미완료</p>}
           </div>
           {isDone ? (
-            <Button
-              className="text-tiny text-white bg-black/60"
-              variant="flat"
-              color="default"
-              radius="lg"
-              size="sm"
-              isDisabled
-            >
-              결과보기
-            </Button>
+            <Link href={`/practice/${id}/result`}>
+              <Button
+                className="text-tiny text-white bg-black/60"
+                variant="flat"
+                color="default"
+                radius="lg"
+                size="sm"
+              >
+                결과보기
+              </Button>
+            </Link>
           ) : (
             <Link href={`/practice/${id}`}>
               <Button
