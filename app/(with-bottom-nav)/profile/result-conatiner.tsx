@@ -14,18 +14,23 @@ interface Result extends _Result {
 }
 export const ResultContainer = ({ results }: { results: Result[] }) => {
   return (
-    <div className="grid grid-cols-2 gap-4 p-4">
-      {results.map((result) => (
-        <ResultItem key={result.id} result={result} />
-      ))}
-    </div>
+    <>
+      <header className="px-4 pt-4">
+        <h3 className="font-bold text-xl">내가 참여한 학습</h3>
+      </header>
+      <div className="grid grid-cols-2 gap-4 p-4">
+        {results.map((result) => (
+          <ResultItem key={result.id} result={result} />
+        ))}
+      </div>
+    </>
   );
 };
 
 const ResultItem = ({ result }: { result: Result }) => {
   const { id, score, created_at, updated_at, practice_sets } = result;
   const { title, description, thumbnail_image, level } = practice_sets!;
-  const isDone = !!score;
+  const isDone = score !== null;
 
   return (
     <Card className="relative">

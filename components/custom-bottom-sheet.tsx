@@ -10,9 +10,7 @@ export const CustomBottomSheet = ({
 }: CustomBottomSheetProps) => {
   return (
     <Portal>
-      <BottomSheet {...rest}>
-        <div className="bg-black">{children}</div>
-      </BottomSheet>
+      <BottomSheet {...rest}>{children}</BottomSheet>
     </Portal>
   );
 };

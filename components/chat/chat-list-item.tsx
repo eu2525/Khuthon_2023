@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CustomBottomSheet } from "../custom-bottom-sheet";
 
 export const ChatListItem = () => {
-  const [open, setOpen] = useState<boolean>(true);
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
     <>

@@ -1,8 +1,9 @@
-import { Avatar, Divider, Progress } from "@nextui-org/react";
+import { Avatar, Button, Divider, Progress } from "@nextui-org/react";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { CheckAuthProvider } from "@/utils/supabase/check-auth-provider";
 import { ResultContainer } from "./result-conatiner";
+import { LogoutButton } from "./logout-button";
 
 export default async function ProfilePage() {
   const cookieStore = cookies();
@@ -11,9 +12,12 @@ export default async function ProfilePage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) return <CheckAuthProvider />;
+
   const { data: results } = await supabase
     .from("practice_results")
     .select("*, practice_sets(*)")
+    .eq("user_id", user?.id)
     // .order("updated_at", { ascending: false })
     .order("created_at", { ascending: false });
 
@@ -43,6 +47,10 @@ export default async function ProfilePage() {
       </section>
       <Divider />
       {results ? <ResultContainer results={results} /> : null}
+      <Divider />
+      <section className="p-4">
+        <LogoutButton />
+      </section>
     </>
   );
 }

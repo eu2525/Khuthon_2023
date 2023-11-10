@@ -3,7 +3,9 @@ import { corsHeaders } from "../_shared/cors.ts";
 
 serve(async (req) => {
   const systemMessage =
-    "점수 : 1~10 사이의 점수를 부여. 상대방의 요구를 잘 반영하고 공감하고 있으면 높은 점수를, 그렇지 않으면 낮은 점수를 부여. 조금이라도 상대방의 요구사항을 반영하지 못하거나 공감을 하지 못하면 2점 미만의 낮은 점수를 부여.";
+    "점수 : 1~10 사이의 점수를 부여. 상대방의 요구를 잘 반영하고 공감하고 있으면 높은 점수를, 그렇지 않으면 낮은 점수를 부여. 조금이라도 상대방의 요구사항을 반영하지 못하거나 공감을 하지 못하면 5점 미만의 낮은 점수를 부여.";
+    // const systemMessage =
+    // "점수 : 1~10 사이의 점수를 부여. 상대방의 요구를 잘 반영하고 공감하고 있으면 높은 점수를, 그렇지 않으면 낮은 점수를 부여.";
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: {
@@ -19,14 +21,15 @@ serve(async (req) => {
       const { prompt } = await req.json();
       const res = await fetch("https://api.openai.com/v1/chat/completions", {
         body: JSON.stringify({
-          model: "gpt-4-1106-preview",
+          // model: "gpt-4-1106-preview",
+          model: "gpt-3.5-turbo-1106",
           messages: [
             { role: "system", content: systemMessage },
             { role: "user", content: prompt },
           ],
           temperature: 0.7,
           max_tokens: 512,
-          top_p: 0.5,
+          top_p: 0.3,
           frequency_penalty: 0,
           presence_penalty: 0,
         }),

@@ -25,9 +25,9 @@ serve(async (req) => {
         `https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions`,
         {
           body: JSON.stringify({
-            prompt,
+            prompt: `점수 : 1~10 사이의 점수를 부여. 상대방의 요구를 잘 반영하고 공감하고 있으면 높은 점수를, 그렇지 않으면 낮은 점수를 부여. 조금이라도 상대방의 요구사항을 반영하지 못하거나 공감을 하지 못하면 2점 미만의 낮은 점수를 부여.\n\n${prompt}`,
             temperature: 0.7,
-            max_tokens: 256,
+            max_tokens: 512,
             top_p: 0.5,
             frequency_penalty: 0,
             presence_penalty: 0,

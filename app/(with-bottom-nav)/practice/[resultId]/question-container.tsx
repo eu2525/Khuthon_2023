@@ -77,7 +77,7 @@ ${chat_raw}
 ${additional_prompt}
 위의 대화에서 '나'는 답변을 잘 한 것 같아? 다음과 같은 양식으로 위의 대화를 평가해줘!
 
-점수 : 0~10 사이로 '나'의 답변을 평가해줘. 상대방의 말에 공감을 잘 하고 있으면 높은 점수를, 그렇지 않으면 0점에 가까운 점수를 줘.
+점수 : 0~10 사이로 '나'의 답변을 평가해줘!
 평가 : 위의 점수를 준 이유
 제안 : '나'가 했어야 하는 답변을 제안`;
       const res = await fetch(
@@ -93,15 +93,18 @@ ${additional_prompt}
           body: JSON.stringify({ prompt }),
         }
       );
+      if (!res.ok)
+        throw new Error("문제가 생겼어요. 잠시후 다시 시도해주세요 :(");
       const data = await res.json();
+      console.log(data);
       const correction_result = data.choices[0].message.content;
       // get score, evaluation, suggestion
-      const scoreMatch = correction_result.match(/^점수 : (\d+)$/m);
-      const evaluationMatch = correction_result.match(/^평가 : (.+)$/m);
-      const suggestionMatch = correction_result.match(/^제안 : (.+)$/m);
-      const score = scoreMatch ? scoreMatch[1] : 0;
-      const evaluation = evaluationMatch ? evaluationMatch[1] : "";
-      const suggestion = suggestionMatch ? suggestionMatch[1] : "";
+      const scoreMatch = correction_result.match(/^점수:(\d+)$/m);
+      const evaluationMatch = correction_result.match(/^평가:(.+)$/m);
+      const suggestionMatch = correction_result.match(/^제안:(.+)$/m);
+      const score = scoreMatch ? scoreMatch[1].trim() : 0;
+      const evaluation = evaluationMatch ? evaluationMatch[1].trim() : "";
+      const suggestion = suggestionMatch ? suggestionMatch[1].trim() : "";
       // add answer
       const supabase = createClient();
       await supabase.from("practice_answers").insert({
