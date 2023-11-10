@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { CheckAuthProvider } from "@/utils/supabase/check-auth-provider";
 import { ResultContainer } from "./result-conatiner";
 import { LogoutButton } from "./logout-button";
+import { RequestContainer } from "./request-container";
 
 export default async function ProfilePage() {
   const cookieStore = cookies();
@@ -20,6 +21,13 @@ export default async function ProfilePage() {
     .eq("user_id", user?.id)
     // .order("updated_at", { ascending: false })
     .order("created_at", { ascending: false });
+  const { data: requests } = await supabase
+    .from("chat_analytic_requests")
+    .select("*")
+    .eq("user_id", user?.id)
+    .order("created_at", {
+      ascending: false,
+    });
 
   return (
     <>
@@ -45,6 +53,8 @@ export default async function ProfilePage() {
           />
         </div>
       </section>
+      <Divider />
+      {requests ? <RequestContainer requests={requests} /> : null}
       <Divider />
       {results ? <ResultContainer results={results} /> : null}
       <Divider />

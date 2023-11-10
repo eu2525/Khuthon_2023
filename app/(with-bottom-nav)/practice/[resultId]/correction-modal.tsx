@@ -25,11 +25,14 @@ export const CorrectionModal = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       placement="center"
+      isDismissable={false}
     >
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1">체점 완료</ModalHeader>
+            <ModalHeader className="flex flex-col gap-1 text-center text-xl">
+              ✅ 채점 완료 ✅
+            </ModalHeader>
             <ModalBody>
               <h5 className="font-bold">점수</h5>
               <p>{score}</p>

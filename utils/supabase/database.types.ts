@@ -16,7 +16,7 @@ export interface Database {
           evaluation: string | null
           id: number
           request_id: number
-          score: number
+          score: number | null
           suggestion: string | null
         }
         Insert: {
@@ -25,7 +25,7 @@ export interface Database {
           evaluation?: string | null
           id?: number
           request_id: number
-          score: number
+          score?: number | null
           suggestion?: string | null
         }
         Update: {
@@ -34,7 +34,7 @@ export interface Database {
           evaluation?: string | null
           id?: number
           request_id?: number
-          score?: number
+          score?: number | null
           suggestion?: string | null
         }
         Relationships: [
@@ -89,6 +89,7 @@ export interface Database {
           evaluation: string | null
           id: number
           question_id: number | null
+          result_id: number | null
           score: number | null
           suggestion: string | null
         }
@@ -98,6 +99,7 @@ export interface Database {
           evaluation?: string | null
           id?: number
           question_id?: number | null
+          result_id?: number | null
           score?: number | null
           suggestion?: string | null
         }
@@ -107,6 +109,7 @@ export interface Database {
           evaluation?: string | null
           id?: number
           question_id?: number | null
+          result_id?: number | null
           score?: number | null
           suggestion?: string | null
         }
@@ -116,6 +119,13 @@ export interface Database {
             columns: ["question_id"]
             isOneToOne: false
             referencedRelation: "practice_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "practice_answers_result_id_fkey"
+            columns: ["result_id"]
+            isOneToOne: false
+            referencedRelation: "practice_results"
             referencedColumns: ["id"]
           }
         ]
