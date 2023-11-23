@@ -19,3 +19,6 @@ AI hub의  주제별 일상 대화 데이터를 Kobert모델에 전이학습시�
 ## 실제 상황을 바탕으로 만든 연습문제를 통한 공감 능력 학습 <br>
 실제 상황을 바탕으로한 다양한 교육자료를 통해 사용자의 답변을 ChatGPT API를 이용해 피드백
 ![image](https://github.com/eu2525/Khuthon_2023/assets/49024115/ddc02f9d-382a-426d-9aa7-82b84ac69c7f)
+
+### 실제 서비스 예시
+![image](https://github.com/eu2525/Khuthon_2023/assets/49024115/d0e4aeff-9499-464b-b318-9a0af4ecfc35)
